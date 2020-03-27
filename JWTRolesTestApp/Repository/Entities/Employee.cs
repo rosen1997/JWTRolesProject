@@ -32,6 +32,7 @@ namespace JWTRolesTestApp.Repository.Entities
         [ForeignKey(nameof(RoleId))]
         public Role Role { get; set; }
 
+        [Required]
         public int RoleId { get; set; }
 
         [JsonIgnore]

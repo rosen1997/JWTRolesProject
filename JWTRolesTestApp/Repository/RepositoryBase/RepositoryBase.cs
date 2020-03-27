@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using JWTRolesTestApp.Repository.Entities;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -67,6 +68,31 @@ namespace JWTRolesTestApp.Repository.RepositoryBase
         public virtual void Create(T entity)
         {
             RepositoryContext.Set<T>().Add(entity);
+        }
+
+        public virtual bool CreateUser(Employee employee, LoginInfo loginInfo)
+        {
+            using (var transaction = RepositoryContext.Database.BeginTransaction())
+            {
+                try
+                {
+                    RepositoryContext.Employees.Add(employee);
+                    RepositoryContext.SaveChanges();
+
+                    loginInfo.EmployeeId = employee.Id;
+                    RepositoryContext.LoginInfos.Add(loginInfo);
+                    RepositoryContext.SaveChanges();
+
+                    transaction.Commit();
+                    return true;
+                }
+                catch(Exception)
+                {
+                    transaction.Rollback();
+                    return false;
+                }
+
+            }
         }
 
         /// <summary>

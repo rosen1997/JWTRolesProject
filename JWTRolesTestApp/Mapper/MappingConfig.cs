@@ -12,6 +12,8 @@ namespace JWTRolesTestApp.Mapper
             EmployeeMap();
             RoleMap();
             LoginInfoMap();
+            CreateEmployeeMap();
+            CreateEmployeeLoginMap();
         }
 
         private void EmployeeMap()
@@ -29,6 +31,18 @@ namespace JWTRolesTestApp.Mapper
         private void LoginInfoMap()
         {
             CreateMap<LoginInfo, LoginModel>()
+                ;
+        }
+
+        private void CreateEmployeeMap()
+        {
+            CreateMap<CreateEmployeeModel, Employee>()
+                ;
+        }
+
+        private void CreateEmployeeLoginMap()
+        {
+            CreateMap<CreateEmployeeModel, LoginInfo>()
                 ;
         }
     }
