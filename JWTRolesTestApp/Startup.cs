@@ -60,7 +60,10 @@ namespace JWTRolesTestApp
                 };
             });
 
-            services.AddDbContext<RepositoryContext>(options => { options.UseSqlServer("Data Source=DESKTOP-N8DJ8NQ\\PROJECTSSERVER;Initial Catalog=JWTRolesTestBase;Integrated Security=True"); });
+            //rosen connection string
+            //services.AddDbContext<RepositoryContext>(options => { options.UseSqlServer("Data Source=DESKTOP-N8DJ8NQ\\PROJECTSSERVER;Initial Catalog=JWTRolesTestBase;Integrated Security=True"); });
+            //neli conecction string
+            services.AddDbContext<RepositoryContext>(options => { options.UseSqlServer("Data Source=LAPTOP-UCG8FSAC\\NZSQLSERVER;Initial Catalog=JWTbase;Integrated Security=True"); });
             services.AddAutoMapper(typeof(Startup));
             services.AddTransient<IUnitOfWork, UnitOfWork>();
             services.AddTransient<IEmployeeRepository, EmployeeService>();
