@@ -92,6 +92,11 @@ namespace JWTRolesTestApp
 
             app.UseRouting();
 
+            app.UseCors(x => x
+            .AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader());
+
             app.UseAuthentication();
             app.UseAuthorization();
 
