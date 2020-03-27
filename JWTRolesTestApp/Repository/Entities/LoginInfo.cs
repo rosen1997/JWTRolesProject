@@ -19,14 +19,17 @@ namespace JWTRolesTestApp.Repository.Entities
         [Required]
         public string Username { get; set; }
 
-        [MaxLength(64)]
         [Required]
-        public string Password { get; set; }
+        public byte[] PasswordHash { get; set; }
+
+        [Required]
+        public byte[] PasswordSalt { get; set; }
 
         [JsonIgnore]
         [ForeignKey(nameof(EmployeeId))]
         public Employee Employee { get; set; }
 
+        [Required]
         public int EmployeeId { get; set; }
     }
 }

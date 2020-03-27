@@ -31,11 +31,11 @@ namespace JWTRolesTestApp.Repository.Services
 
         public EmployeeModel Authenticate(string username, string password)
         {
-            LoginModel login = GetLoginInfo(username, password);
-            if (login == null)
+            int? userId = GetLoginInfoUserId(username, password);
+            if (userId == null)
                 return null;
 
-            EmployeeModel employee = GetById(login.Employee.Id);
+            EmployeeModel employee = GetById(userId.GetValueOrDefault());
 
             JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
             byte[] key = Encoding.ASCII.GetBytes(appSettings.Secret);
@@ -46,7 +46,7 @@ namespace JWTRolesTestApp.Repository.Services
                     new Claim(ClaimTypes.Name, employee.Id.ToString()),
                     new Claim(ClaimTypes.Role, employee.Role.RoleDescription)
                 }),
-                Expires = DateTime.UtcNow.AddDays(7),
+                Expires = DateTime.UtcNow.AddDays(1),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
             SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
@@ -75,15 +75,74 @@ namespace JWTRolesTestApp.Repository.Services
             return employee;
         }
 
-        public LoginModel GetLoginInfo(string username, string password)
+        public int? GetLoginInfoUserId(string username, string password)
         {
-            LoginInfo login = unitOfWork.LoginInfoManager.GetAllWIthEmployee().SingleOrDefault(x => x.Username == username && x.Password == password);
+            LoginInfo login = unitOfWork.LoginInfoManager.GetAllWIthEmployee().SingleOrDefault(x => x.Username == username);
             if (login == null)
                 return null;
 
-            LoginModel loginModel = mapper.Map<LoginModel>(login);
+            if (!VerifyPasswordHash(password, login.PasswordHash, login.PasswordSalt))
+                return null;
 
-            return loginModel;
+            return login.EmployeeId;
+        }
+
+        public EmployeeModel CreateEmployee(CreateEmployeeModel createEmployeeModel)
+        {
+            if (unitOfWork.LoginInfoManager.GetAllWIthEmployee().SingleOrDefault(x => x.Username == createEmployeeModel.Username) != null)
+                return null;
+
+            byte[] passwordHash, passwordSalt;
+            CreatePasswordHash(createEmployeeModel.Password, out passwordHash, out passwordSalt);
+
+            Employee employee = mapper.Map<Employee>(createEmployeeModel);
+            int roleId = unitOfWork.RoleManager.GetAll().Where(x => x.RoleDescription == createEmployeeModel.RoleDescription).FirstOrDefault().Id;
+            employee.RoleId = roleId;
+            LoginInfo loginInfo = mapper.Map<LoginInfo>(createEmployeeModel);
+            loginInfo.PasswordSalt = passwordSalt;
+            loginInfo.PasswordHash = passwordHash;
+
+            if (!unitOfWork.EmployeeManager.CreateUser(employee, loginInfo))
+            {
+                return null;
+            }
+
+            EmployeeModel employeeModel = mapper.Map<EmployeeModel>(employee);
+
+            return employeeModel;
+
+
+        }
+
+        private static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
+        {
+            if (password == null) throw new ArgumentNullException("password");
+            if (string.IsNullOrWhiteSpace(password)) throw new ArgumentException("Value cannot be empty or whitespace only string.", "password");
+
+            using (var hmac = new System.Security.Cryptography.HMACSHA512())
+            {
+                passwordSalt = hmac.Key;
+                passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+            }
+        }
+
+        private static bool VerifyPasswordHash(string password, byte[] storedHash, byte[] storedSalt)
+        {
+            if (password == null) throw new ArgumentNullException("password");
+            if (string.IsNullOrWhiteSpace(password)) throw new ArgumentException("Value cannot be empty or whitespace only string.", "password");
+            if (storedHash.Length != 64) throw new ArgumentException("Invalid length of password hash (64 bytes expected).", "passwordHash");
+            if (storedSalt.Length != 128) throw new ArgumentException("Invalid length of password salt (128 bytes expected).", "passwordHash");
+
+            using (var hmac = new System.Security.Cryptography.HMACSHA512(storedSalt))
+            {
+                var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+                for (int i = 0; i < computedHash.Length; i++)
+                {
+                    if (computedHash[i] != storedHash[i]) return false;
+                }
+            }
+
+            return true;
         }
     }
 }

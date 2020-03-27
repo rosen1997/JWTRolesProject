@@ -3,10 +3,7 @@ using JWTRolesTestApp.Repository.Entities;
 using JWTRolesTestApp.Repository.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace JWTRolesTestApp.Controllers
 {
@@ -60,6 +57,20 @@ namespace JWTRolesTestApp.Controllers
             if (id != currentUserId && !User.IsInRole("Admin"))
             {
                 return Forbid();
+            }
+
+            return Ok(employee);
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost("CreateEmployee")]
+        public IActionResult CreateEmployee([FromBody] CreateEmployeeModel createEmployeeModel)
+        {
+            EmployeeModel employee = employeeRepository.CreateEmployee(createEmployeeModel);
+
+            if(employee==null)
+            {
+                return Problem();
             }
 
             return Ok(employee);

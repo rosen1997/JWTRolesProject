@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JWTRolesTestApp.Repository.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -34,6 +35,8 @@ namespace JWTRolesTestApp.Repository.RepositoryBase
         /// </summary>
         /// <param name="entity">Entry to add</param>
         void Create(T entity);
+
+        bool CreateUser(Employee employee, LoginInfo loginInfo);
 
         /// <summary>
         /// Update specific entry based on PK

@@ -12,8 +12,8 @@ namespace JWTRolesTestApp.Repository.Seeds
         {
             return new LoginInfo[]
             {
-                new LoginInfo{Id=1, Username="rosen", Password="rosen", EmployeeId=1 },
-                new LoginInfo{Id=2, Username="neli", Password="neli", EmployeeId=2 },
+                new LoginInfo{Id=1, Username="rosen", PasswordHash=new byte[]{ }, PasswordSalt= new byte[]{ },EmployeeId=1 },
+                new LoginInfo{Id=2, Username="neli", PasswordHash=new byte[]{ }, PasswordSalt= new byte[]{ }, EmployeeId=2 },
             };
         }
     }
