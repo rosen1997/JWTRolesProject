@@ -34,34 +34,6 @@ namespace JWTRolesTestApp.Repository.RepositoryBase
         }
 
         /// <summary>
-        /// Parametrized query
-        /// </summary>
-        /// <param name="predicate">Condition for searching</param>
-        /// <returns>All entries matching search criteria</returns>
-        public virtual IEnumerable<T> FindByCondition(Expression<Func<T, bool>> predicate)
-        {
-            return RepositoryContext.Set<T>().Where(predicate);
-        }
-
-        /// <summary>
-        /// Parametrized query with No Tracking
-        /// </summary>
-        /// <param name="predicate"></param>
-        /// <param name="track"></param>
-        /// <returns></returns>
-        public virtual IEnumerable<T> FindByCondition(Expression<Func<T, bool>> predicate, bool track)
-        {
-            if (track)
-            {
-                return RepositoryContext.Set<T>().Where(predicate);
-            }
-            else
-            {
-                return RepositoryContext.Set<T>().Where(predicate).AsNoTracking();
-            }
-        }
-
-        /// <summary>
         /// Add one entry to table
         /// </summary>
         /// <param name="entity">Entry to add</param>
@@ -86,7 +58,7 @@ namespace JWTRolesTestApp.Repository.RepositoryBase
                     transaction.Commit();
                     return true;
                 }
-                catch(Exception)
+                catch (Exception)
                 {
                     transaction.Rollback();
                     return false;
@@ -102,6 +74,41 @@ namespace JWTRolesTestApp.Repository.RepositoryBase
         public virtual void Update(T entity)
         {
             RepositoryContext.Set<T>().Update(entity);
+            RepositoryContext.SaveChanges();
+        }
+
+        public virtual void UpdateUser(Employee employee, LoginInfo loginInfo)
+        {
+            if (employee != null && loginInfo != null)
+            {
+                using (var transaction = RepositoryContext.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        RepositoryContext.Employees.Update(employee);
+                        RepositoryContext.SaveChanges();
+
+                        RepositoryContext.LoginInfos.Update(loginInfo);
+                        RepositoryContext.SaveChanges();
+
+                        transaction.Commit();
+                    }
+                    catch (Exception)
+                    {
+                        transaction.Rollback();
+                    }
+                }
+            }
+            else if (employee != null)
+            {
+                RepositoryContext.Employees.Update(employee);
+                RepositoryContext.SaveChanges();
+            }
+            else if (loginInfo != null)
+            {
+                RepositoryContext.LoginInfos.Update(loginInfo);
+                RepositoryContext.SaveChanges();
+            }
         }
 
         /// <summary>
@@ -111,49 +118,7 @@ namespace JWTRolesTestApp.Repository.RepositoryBase
         public virtual void Delete(T entity)
         {
             RepositoryContext.Set<T>().Remove(entity);
-        }
-
-        /// <summary>
-        /// Find if specific entry exist
-        /// </summary>
-        /// <param name="predicate">Criteria for searching</param>
-        /// <returns>Entry if exists</returns>
-        public virtual T Exist(Expression<Func<T, bool>> predicate)
-        {
-            return RepositoryContext.Set<T>().Where(predicate).FirstOrDefault();
-        }
-
-        /// <summary>
-        /// Find if last specific entry exist
-        /// </summary>
-        /// <param name="predicate">Criteria for searching</param>
-        /// <param name="keySelector"></param>
-        /// <returns>Last entry if exists</returns>
-        public virtual T LastExist<TKey>(Expression<Func<T, bool>> predicate, Expression<Func<T, TKey>> keySelector)
-        {
-            return RepositoryContext.Set<T>().Where(predicate).OrderByDescending(keySelector).FirstOrDefault();
-        }
-
-        /// <summary>
-        /// Find if last specific entry exist
-        /// </summary>
-        /// <param name="predicate">Criteria for searching</param>
-        /// <param name="keySelector"></param>
-        /// <param name="track"></param>
-        /// <returns>Last entry if exists</returns>
-        public virtual T LastExist<TKey>(Expression<Func<T, bool>> predicate, Expression<Func<T, TKey>> keySelector, bool track)
-        {
-            IQueryable<T> query =
-                RepositoryContext
-                .Set<T>()
-                .Where(predicate)
-                .OrderByDescending(keySelector);
-            if (track)
-            {
-                query.AsNoTracking();
-            }
-
-            return query.FirstOrDefault();
+            RepositoryContext.SaveChanges();
         }
 
         /// <summary>
@@ -163,16 +128,6 @@ namespace JWTRolesTestApp.Repository.RepositoryBase
         public virtual int Count()
         {
             return RepositoryContext.Set<T>().Count();
-        }
-
-        /// <summary>
-        /// Count all entries in table by condition
-        /// </summary>
-        /// <param name="predicate">Criteria for searching</param>
-        /// <returns></returns>
-        public virtual int Count(Expression<Func<T, bool>> predicate)
-        {
-            return RepositoryContext.Set<T>().Where(predicate).Count();
         }
     }
 }

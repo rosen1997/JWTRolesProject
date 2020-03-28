@@ -20,12 +20,14 @@ namespace JWTRolesTestApp.Repository.Services
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly IMapper mapper;
+        private readonly ILoginInfoRepository loginInfoRepository;
         private readonly AppSettings appSettings;
 
-        public EmployeeService(IUnitOfWork unitOfWork, IOptions<AppSettings> appSettings, IMapper mapper)
+        public EmployeeService(IUnitOfWork unitOfWork, IOptions<AppSettings> appSettings, IMapper mapper, ILoginInfoRepository loginInfoRepository)
         {
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;
+            this.loginInfoRepository = loginInfoRepository;
             this.appSettings = appSettings.Value;
         }
 
@@ -75,6 +77,11 @@ namespace JWTRolesTestApp.Repository.Services
             return employee;
         }
 
+        private Employee GetEntityById(int id)
+        {
+            return unitOfWork.EmployeeManager.GetAll().FirstOrDefault(x => x.Id == id);
+        }
+
         public int? GetLoginInfoUserId(string username, string password)
         {
             LoginInfo login = unitOfWork.LoginInfoManager.GetAllWIthEmployee().SingleOrDefault(x => x.Username == username);
@@ -114,7 +121,7 @@ namespace JWTRolesTestApp.Repository.Services
 
         }
 
-        private static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
+        private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
         {
             if (password == null) throw new ArgumentNullException("password");
             if (string.IsNullOrWhiteSpace(password)) throw new ArgumentException("Value cannot be empty or whitespace only string.", "password");
@@ -126,7 +133,7 @@ namespace JWTRolesTestApp.Repository.Services
             }
         }
 
-        private static bool VerifyPasswordHash(string password, byte[] storedHash, byte[] storedSalt)
+        private bool VerifyPasswordHash(string password, byte[] storedHash, byte[] storedSalt)
         {
             if (password == null) throw new ArgumentNullException("password");
             if (string.IsNullOrWhiteSpace(password)) throw new ArgumentException("Value cannot be empty or whitespace only string.", "password");
@@ -143,6 +150,60 @@ namespace JWTRolesTestApp.Repository.Services
             }
 
             return true;
+        }
+
+
+        public void DeleteEmployee(int id)
+        {
+            Employee employee = GetEntityById(id);
+            if (employee != null)
+                unitOfWork.EmployeeManager.Delete(employee);
+
+        }
+
+        public void UpdateEmployee(UpdateEmployeeModel employeeModel)
+        {
+            bool updateUser = false;
+            bool updateLoginInfo = false;
+
+            Employee employeeDB = GetEntityById(employeeModel.EmployeeId);
+            LoginInfo loginDB = loginInfoRepository.GetEntityByUserId(employeeModel.EmployeeId);
+
+            if (employeeDB == null || loginDB == null)
+            {
+                return;
+            }
+
+            int roleId = unitOfWork.RoleManager.GetAll().Where(x => x.RoleDescription == employeeModel.RoleDescription).FirstOrDefault().Id;
+            if ((employeeModel.FirstName != employeeDB.FirstName && !string.IsNullOrWhiteSpace(employeeDB.FirstName))
+                || (employeeModel.MiddleName != employeeDB.MiddleName && !string.IsNullOrWhiteSpace(employeeDB.MiddleName))
+                || (employeeModel.LastName != employeeDB.LastName && !string.IsNullOrWhiteSpace(employeeDB.LastName))
+                || employeeDB.RoleId != roleId)
+            {
+                employeeDB.FirstName = employeeModel.FirstName;
+                employeeDB.MiddleName = employeeModel.MiddleName;
+                employeeDB.LastName = employeeModel.LastName;
+
+                employeeDB.RoleId = roleId;
+                updateUser = true;
+            }
+            if (!VerifyPasswordHash(employeeModel.Password, loginDB.PasswordHash, loginDB.PasswordSalt) && !string.IsNullOrWhiteSpace(employeeModel.Password))
+            {
+                byte[] passwordHash, passwordSalt;
+                CreatePasswordHash(employeeModel.Password, out passwordHash, out passwordSalt);
+
+                loginDB.PasswordSalt = passwordSalt;
+                loginDB.PasswordHash = passwordHash;
+
+                updateLoginInfo = true;
+            }
+
+            if (updateUser && updateLoginInfo)
+                unitOfWork.EmployeeManager.UpdateUser(employeeDB, loginDB);
+            else if (updateUser)
+                unitOfWork.EmployeeManager.UpdateUser(employeeDB, null);
+            else if (updateLoginInfo)
+                unitOfWork.EmployeeManager.UpdateUser(null, loginDB);
         }
     }
 }

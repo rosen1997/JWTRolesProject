@@ -16,5 +16,9 @@ namespace JWTRolesTestApp.Repository.Services.Interfaces
         public EmployeeModel GetById(int id);
 
         public EmployeeModel CreateEmployee(CreateEmployeeModel createEmployeeModel);
+
+        public void DeleteEmployee(int id);
+
+        public void UpdateEmployee(UpdateEmployeeModel employeeModel);
     }
 }

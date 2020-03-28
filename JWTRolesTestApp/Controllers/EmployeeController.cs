@@ -3,6 +3,7 @@ using JWTRolesTestApp.Repository.Entities;
 using JWTRolesTestApp.Repository.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 
 namespace JWTRolesTestApp.Controllers
@@ -68,12 +69,44 @@ namespace JWTRolesTestApp.Controllers
         {
             EmployeeModel employee = employeeRepository.CreateEmployee(createEmployeeModel);
 
-            if(employee==null)
+            if (employee == null)
             {
                 return Problem();
             }
 
             return Ok(employee);
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpDelete]
+        [Route("DeleteEmployee")]
+        public IActionResult DeleteEmployee(int id)
+        {
+            try
+            {
+                employeeRepository.DeleteEmployee(id);
+                return Ok();
+            }
+            catch(Exception)
+            {
+                return Problem();
+            }
+        }
+
+
+        [Authorize(Roles = "Admin")]
+        [HttpPut("UpdateEmployee")]
+        public IActionResult UpdateEmployee([FromBody] UpdateEmployeeModel employeeModel)
+        {
+            try
+            {
+                employeeRepository.UpdateEmployee(employeeModel);
+                return Ok();
+            }
+            catch (Exception)
+            {
+                return Problem();
+            }
         }
     }
 }
