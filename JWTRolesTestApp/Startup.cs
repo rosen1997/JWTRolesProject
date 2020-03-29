@@ -68,6 +68,7 @@ namespace JWTRolesTestApp
             services.AddTransient<IUnitOfWork, UnitOfWork>();
             services.AddTransient<IEmployeeRepository, EmployeeService>();
             services.AddTransient<ILoginInfoRepository, LoginInfoService>();
+            services.AddTransient<IRoleRepository, RoleService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -40,6 +40,7 @@ namespace JWTRolesTestApp.Repository.RepositoryBase
         public virtual void Create(T entity)
         {
             RepositoryContext.Set<T>().Add(entity);
+            RepositoryContext.SaveChanges();
         }
 
         public virtual bool CreateUser(Employee employee, LoginInfo loginInfo)
