@@ -10,5 +10,7 @@ namespace JWTRolesTestApp.Repository.Managers.Interfaces
     public interface IEmployeeManager : IRepositoryBase<Employee>
     {
         public IEnumerable<Employee> GetAllWithRoles();
+
+        public Employee GetByIdWithRole(int id);
     }
 }

@@ -33,6 +33,11 @@ namespace JWTRolesTestApp.Repository.RepositoryBase
             return RepositoryContext.Set<T>();
         }
 
+        public virtual T FindById(int id)
+        {
+            return RepositoryContext.Set<T>().Find(id);
+        }
+
         /// <summary>
         /// Add one entry to table
         /// </summary>

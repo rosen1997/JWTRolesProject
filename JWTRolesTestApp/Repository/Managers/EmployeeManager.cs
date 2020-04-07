@@ -21,5 +21,10 @@ namespace JWTRolesTestApp.Repository.Managers
                 .Include(x => x.Role)
                 .ToList();
         }
+
+        public Employee GetByIdWithRole(int id)
+        {
+            return RepositoryContext.Employees.Include(x => x.Role).Where(x => x.Id == id).FirstOrDefault();
+        }
     }
 }

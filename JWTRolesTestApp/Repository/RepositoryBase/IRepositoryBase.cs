@@ -15,6 +15,7 @@ namespace JWTRolesTestApp.Repository.RepositoryBase
         /// <returns>All entries in table</returns>
         IEnumerable<T> GetAll();
 
+        T FindById(int id);
         /// <summary>
         /// Add one entry to table
         /// </summary>

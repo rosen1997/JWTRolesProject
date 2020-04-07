@@ -54,9 +54,7 @@ namespace JWTRolesTestApp.Repository.Services
             SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
             employee.Token = tokenHandler.WriteToken(token);
 
-            EmployeeModel employeeModel = mapper.Map<EmployeeModel>(employee);
-
-            return employeeModel;
+            return employee;
         }
 
         public IEnumerable<EmployeeModel> GetAllEmployees()
@@ -70,16 +68,14 @@ namespace JWTRolesTestApp.Repository.Services
 
         public EmployeeModel GetById(int id)
         {
-            IEnumerable<EmployeeModel> employees = GetAllEmployees();
-
-            EmployeeModel employee = employees.FirstOrDefault(x => x.Id == id);
+            EmployeeModel employee = mapper.Map<EmployeeModel>(unitOfWork.EmployeeManager.GetByIdWithRole(id));
 
             return employee;
         }
 
         private Employee GetEntityById(int id)
         {
-            return unitOfWork.EmployeeManager.GetAll().FirstOrDefault(x => x.Id == id);
+            return unitOfWork.EmployeeManager.FindById(id);
         }
 
         public int? GetLoginInfoUserId(string username, string password)
