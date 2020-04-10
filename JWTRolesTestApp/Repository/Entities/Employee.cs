@@ -28,6 +28,7 @@ namespace JWTRolesTestApp.Repository.Entities
         public string LastName { get; set; }
 
         public LoginInfo LoginInfo { get; set; }
+        public AtWork AtWork { get; set; }
 
         [ForeignKey(nameof(RoleId))]
         public Role Role { get; set; }

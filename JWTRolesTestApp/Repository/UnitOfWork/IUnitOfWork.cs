@@ -11,5 +11,6 @@ namespace JWTRolesTestApp.Repository.UnitOfWork
         IEmployeeManager EmployeeManager { get; }
         ILoginInfoManager LoginInfoManager { get; }
         IRoleManager RoleManager { get; }
+        IAtWorkManager AtWorkManager { get; }
     }
 }

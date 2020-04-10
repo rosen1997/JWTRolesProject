@@ -17,6 +17,7 @@ namespace JWTRolesTestApp.Repository.UnitOfWork
             EmployeeManager = new EmployeeManager(repositoryContext);
             LoginInfoManager = new LoginInfoManager(repositoryContext);
             RoleManager = new RoleManager(repositoryContext);
+            AtWorkManager = new AtWorkManager(repositoryContext);
         }
 
         public IEmployeeManager EmployeeManager { get; }
@@ -24,5 +25,7 @@ namespace JWTRolesTestApp.Repository.UnitOfWork
         public ILoginInfoManager LoginInfoManager { get; }
 
         public IRoleManager RoleManager { get; }
+
+        public IAtWorkManager AtWorkManager { get; }
     }
 }

@@ -23,6 +23,11 @@ namespace JWTRolesTestApp.Repository
                 .HasForeignKey<LoginInfo>(b => b.EmployeeId);
 
             modelBuilder.Entity<Employee>()
+                .HasOne(a => a.AtWork)
+                .WithOne(b => b.Employee)
+                .HasForeignKey<AtWork>(b => b.EmployeeId);
+
+            modelBuilder.Entity<Employee>()
                 .HasData(EmployeeSeed.Seed());
             #endregion
 
@@ -43,10 +48,15 @@ namespace JWTRolesTestApp.Repository
             modelBuilder.Entity<Role>()
                 .HasData(RoleSeed.Seed());
             #endregion
+
+            #region AtWork
+            //No seed needed
+            #endregion
         }
 
         public DbSet<Employee> Employees { get; set; }
         public DbSet<LoginInfo> LoginInfos { get; set; }
         public DbSet<Role> Roles { get; set; }
+        public DbSet<AtWork> AtWork { get; set; }
     }
 }

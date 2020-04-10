@@ -16,6 +16,7 @@ namespace JWTRolesTestApp.Mapper
             CreateEmployeeLoginMap();
             UpdateEmployeeMap();
             UpdateEmployeeLogin();
+            AtWorkMap();
         }
 
         private void EmployeeMap()
@@ -60,5 +61,10 @@ namespace JWTRolesTestApp.Mapper
                 ;
         }
 
+        private void AtWorkMap()
+        {
+            CreateMap<AtWork, AtWorkModel>()
+                ;
+        }
     }
 }
