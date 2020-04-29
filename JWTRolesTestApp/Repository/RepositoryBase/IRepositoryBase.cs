@@ -43,5 +43,7 @@ namespace JWTRolesTestApp.Repository.RepositoryBase
         /// </summary>
         /// <returns></returns>
         int Count();
+
+        void LogoutUser(AtWork atWork, LoginHistory loginHistory);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using JWTRolesTestApp.Models;
+using JWTRolesTestApp.Repository.Entities;
 using JWTRolesTestApp.Repository.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,10 +16,12 @@ namespace JWTRolesTestApp.Controllers
     public class LoginController : Controller
     {
         private readonly IAtWorkRepository atWorkRepository;
+        private readonly ILoginHistoryRepository loginHistoryRepository;
 
-        public LoginController(IAtWorkRepository atWorkRepository)
+        public LoginController(IAtWorkRepository atWorkRepository, ILoginHistoryRepository loginHistoryRepository)
         {
             this.atWorkRepository = atWorkRepository;
+            this.loginHistoryRepository = loginHistoryRepository;
         }
 
         [Authorize(Roles = "Admin")]
@@ -62,6 +65,47 @@ namespace JWTRolesTestApp.Controllers
             atWorkRepository.LoginAtWork(currentUserId);
 
             return Ok();
+        }
+
+        [HttpPut]
+        [Route("LogoutFromWork")]
+        public IActionResult LogoutFromWork()
+        {
+            int currentUserId = int.Parse(User.Identity.Name);
+
+            AtWork atWork = atWorkRepository.GetEntityByEmployeeId(currentUserId);
+
+            if (atWork == null)
+            {
+                return BadRequest();
+            }
+
+            loginHistoryRepository.LogoutFromWork(atWork);
+
+            return Ok();
+        }
+
+        [HttpGet]
+        [Route("GetLoginHistory")]
+        [Authorize(Roles = "Admin")]
+        public IActionResult GetLoginHistory()
+        {
+            return Ok(loginHistoryRepository.GetAllRows());
+        }
+
+        [HttpGet]
+        [Route("GetLoginHistoryByEmployeeId")]
+        public IActionResult GetLoginHistoryByEmployeeId(int id)
+        {
+            int currentUserId = int.Parse(User.Identity.Name);
+            if (id != currentUserId && !User.IsInRole("Admin"))
+            {
+                return Forbid();
+            }
+
+            IEnumerable<LoginHistoryModel> loginHistoryModel = loginHistoryRepository.GetAllRowsByEmployeeId(id);
+
+            return Ok(loginHistoryModel);
         }
     }
 }

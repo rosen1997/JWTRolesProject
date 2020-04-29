@@ -30,14 +30,13 @@ namespace JWTRolesTestApp.Repository.Entities
         public LoginInfo LoginInfo { get; set; }
         public AtWork AtWork { get; set; }
 
+        public IEnumerable<LoginHistory> LoginsHistory { get; set; }
+
         [ForeignKey(nameof(RoleId))]
         public Role Role { get; set; }
 
         [Required]
         public int RoleId { get; set; }
-
-        [JsonIgnore]
-        public string Token { get; set; }
 
     }
 }

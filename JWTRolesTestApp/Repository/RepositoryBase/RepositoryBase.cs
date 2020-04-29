@@ -135,5 +135,27 @@ namespace JWTRolesTestApp.Repository.RepositoryBase
         {
             return RepositoryContext.Set<T>().Count();
         }
+
+        public virtual void LogoutUser(AtWork atWork, LoginHistory loginHistory)
+        {
+            using (var transaction = RepositoryContext.Database.BeginTransaction())
+            {
+                try
+                {
+                    RepositoryContext.AtWork.Remove(atWork);
+                    RepositoryContext.SaveChanges();
+
+                    RepositoryContext.LoginHistory.Add(loginHistory);
+                    RepositoryContext.SaveChanges();
+
+                    transaction.Commit();
+                }
+                catch (Exception)
+                {
+                    transaction.Rollback();
+                }
+
+            }
+        }
     }
 }

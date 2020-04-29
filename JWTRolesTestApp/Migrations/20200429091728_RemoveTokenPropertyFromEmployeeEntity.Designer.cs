@@ -4,14 +4,16 @@ using JWTRolesTestApp.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace JWTRolesTestApp.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    partial class RepositoryContextModelSnapshot : ModelSnapshot
+    [Migration("20200429091728_RemoveTokenPropertyFromEmployeeEntity")]
+    partial class RemoveTokenPropertyFromEmployeeEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -88,29 +90,6 @@ namespace JWTRolesTestApp.Migrations
                             MiddleName = "Lychezarova",
                             RoleId = 2
                         });
-                });
-
-            modelBuilder.Entity("JWTRolesTestApp.Repository.Entities.LoginHistory", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("EmployeeId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("LoginTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("LogoutTime")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EmployeeId");
-
-                    b.ToTable("LoginsHistory");
                 });
 
             modelBuilder.Entity("JWTRolesTestApp.Repository.Entities.LoginInfo", b =>
@@ -208,15 +187,6 @@ namespace JWTRolesTestApp.Migrations
                     b.HasOne("JWTRolesTestApp.Repository.Entities.Role", "Role")
                         .WithMany("Employees")
                         .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("JWTRolesTestApp.Repository.Entities.LoginHistory", b =>
-                {
-                    b.HasOne("JWTRolesTestApp.Repository.Entities.Employee", "Employee")
-                        .WithMany("LoginsHistory")
-                        .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

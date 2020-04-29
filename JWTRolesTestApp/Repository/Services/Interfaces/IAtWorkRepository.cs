@@ -1,4 +1,5 @@
 ﻿using JWTRolesTestApp.Models;
+using JWTRolesTestApp.Repository.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,10 +11,10 @@ namespace JWTRolesTestApp.Repository.Services.Interfaces
     {
         public AtWorkModel GetByEmployeeId(int employeeId);
 
+        public AtWork GetEntityByEmployeeId(int employeeId);
+
         public IEnumerable<AtWorkModel> GetAllRows();
 
         public void LoginAtWork(int employeeId);
-
-        public void LeaveWork();
     }
 }

@@ -35,9 +35,9 @@ namespace JWTRolesTestApp.Repository.Services
             return atWorkModel;
         }
 
-        public void LeaveWork()
+        public AtWork GetEntityByEmployeeId(int employeeId)
         {
-            throw new NotImplementedException();
+            return unitOfWork.AtWorkManager.GetByEmployeeId(employeeId);
         }
 
         public void LoginAtWork(int employeeId)

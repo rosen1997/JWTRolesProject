@@ -29,6 +29,10 @@ namespace JWTRolesTestApp.Repository
 
             modelBuilder.Entity<Employee>()
                 .HasData(EmployeeSeed.Seed());
+
+            modelBuilder.Entity<Employee>()
+                .HasMany(a => a.LoginsHistory)
+                .WithOne(b => b.Employee);
             #endregion
 
             #region LoginInfo
@@ -52,11 +56,16 @@ namespace JWTRolesTestApp.Repository
             #region AtWork
             //No seed needed
             #endregion
+
+            #region LoginHistory
+            // no seed needed
+            #endregion
         }
 
         public DbSet<Employee> Employees { get; set; }
         public DbSet<LoginInfo> LoginInfos { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<AtWork> AtWork { get; set; }
+        public DbSet<LoginHistory> LoginHistory { get; set; } 
     }
 }
