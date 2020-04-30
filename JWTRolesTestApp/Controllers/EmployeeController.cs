@@ -87,7 +87,7 @@ namespace JWTRolesTestApp.Controllers
                 employeeRepository.DeleteEmployee(id);
                 return Ok();
             }
-            catch(Exception)
+            catch (Exception)
             {
                 return Problem();
             }

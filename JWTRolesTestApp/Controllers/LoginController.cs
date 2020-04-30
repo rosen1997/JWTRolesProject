@@ -36,11 +36,16 @@ namespace JWTRolesTestApp.Controllers
 
         [HttpGet]
         [Route("GetAtWorkByEmployeeId")]
-        public IActionResult GetAtWorkByEmployeeId()
+        public IActionResult GetAtWorkByEmployeeId(int id)
         {
             int currentUserId = int.Parse(User.Identity.Name);
 
-            AtWorkModel atWorkModel = atWorkRepository.GetByEmployeeId(currentUserId);
+            if (id != currentUserId && !User.IsInRole("Admin"))
+            {
+                return Forbid();
+            }
+
+            AtWorkModel atWorkModel = atWorkRepository.GetByEmployeeId(id);
 
             if (atWorkModel != null)
             {
@@ -56,15 +61,22 @@ namespace JWTRolesTestApp.Controllers
         [Route("LoginAtWork")]
         public IActionResult LoginAtWork()
         {
-            IActionResult result = GetAtWorkByEmployeeId();
-            if (result.ToString() != new NotFoundResult().ToString())
+            int currentUserId = int.Parse(User.Identity.Name);
+            AtWorkModel atWorkModel = atWorkRepository.GetByEmployeeId(currentUserId);
+
+            if (atWorkModel != null)
                 return BadRequest();
 
-            int currentUserId = int.Parse(User.Identity.Name);
+            try
+            {
+                atWorkRepository.LoginAtWork(currentUserId);
 
-            atWorkRepository.LoginAtWork(currentUserId);
-
-            return Ok();
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return Problem(e.Message);
+            }
         }
 
         [HttpPut]
