@@ -183,7 +183,7 @@ namespace JWTRolesTestApp.Repository.Services
                 employeeDB.RoleId = roleId;
                 updateUser = true;
             }
-            if (!VerifyPasswordHash(employeeModel.Password, loginDB.PasswordHash, loginDB.PasswordSalt) && !string.IsNullOrWhiteSpace(employeeModel.Password))
+            if (!string.IsNullOrWhiteSpace(employeeModel.Password) && !VerifyPasswordHash(employeeModel.Password, loginDB.PasswordHash, loginDB.PasswordSalt))
             {
                 byte[] passwordHash, passwordSalt;
                 CreatePasswordHash(employeeModel.Password, out passwordHash, out passwordSalt);
