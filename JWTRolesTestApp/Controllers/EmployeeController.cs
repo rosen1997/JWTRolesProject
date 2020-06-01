@@ -103,9 +103,30 @@ namespace JWTRolesTestApp.Controllers
                 employeeRepository.UpdateEmployee(employeeModel);
                 return Ok();
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return Problem();
+                return Problem(e.Message);
+            }
+        }
+
+        [HttpPut("UpdateEmployeePassword")]
+        public IActionResult UpdateEmployeePassword([FromBody] UpdateEmployeeModel employeeModel)
+        {
+            int currentUserId = int.Parse(User.Identity.Name);
+
+            if (currentUserId != employeeModel.EmployeeId)
+            {
+                return Forbid();
+            }
+
+            try
+            {
+                employeeRepository.UpdateEmployee(employeeModel);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return Problem(e.Message);
             }
         }
     }

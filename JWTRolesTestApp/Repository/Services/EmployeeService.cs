@@ -170,11 +170,16 @@ namespace JWTRolesTestApp.Repository.Services
                 return;
             }
 
-            int roleId = unitOfWork.RoleManager.GetAll().Where(x => x.RoleDescription == employeeModel.RoleDescription).FirstOrDefault().Id;
-            if ((employeeModel.FirstName != employeeDB.FirstName && !string.IsNullOrWhiteSpace(employeeDB.FirstName))
-                || (employeeModel.MiddleName != employeeDB.MiddleName && !string.IsNullOrWhiteSpace(employeeDB.MiddleName))
-                || (employeeModel.LastName != employeeDB.LastName && !string.IsNullOrWhiteSpace(employeeDB.LastName))
-                || employeeDB.RoleId != roleId)
+            int roleId = -1;
+            if (employeeModel.RoleDescription != null)
+            {
+                roleId = unitOfWork.RoleManager.GetAll().Where(x => x.RoleDescription == employeeModel.RoleDescription).FirstOrDefault().Id;
+            }
+
+            if ((!string.IsNullOrWhiteSpace(employeeModel.FirstName) && employeeModel.FirstName != employeeDB.FirstName)
+                || (!string.IsNullOrWhiteSpace(employeeModel.MiddleName) && employeeModel.MiddleName != employeeDB.MiddleName)
+                || (!string.IsNullOrWhiteSpace(employeeModel.LastName) && employeeModel.LastName != employeeDB.LastName)
+                || (roleId != -1 && employeeDB.RoleId != roleId))
             {
                 employeeDB.FirstName = employeeModel.FirstName;
                 employeeDB.MiddleName = employeeModel.MiddleName;
