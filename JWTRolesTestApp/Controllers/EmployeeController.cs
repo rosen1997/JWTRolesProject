@@ -72,7 +72,7 @@ namespace JWTRolesTestApp.Controllers
 
             if (employee == null)
             {
-                return Problem();
+                return Problem(message);
             }
 
             return Ok(employee);

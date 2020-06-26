@@ -150,6 +150,7 @@ namespace JWTRolesTestApp.Repository.Services
             catch
             {
                 unitOfWork.RollbackTransaction();
+                message = "Could not create employee";
                 return null;
             }
 
