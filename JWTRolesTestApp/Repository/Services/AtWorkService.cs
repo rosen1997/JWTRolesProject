@@ -44,6 +44,7 @@ namespace JWTRolesTestApp.Repository.Services
         {
             AtWork atWork = new AtWork() { LoginTime = DateTime.Now, EmployeeId = employeeId };
             unitOfWork.AtWorkManager.Create(atWork);
+            unitOfWork.SaveChanges();
         }
     }
 }

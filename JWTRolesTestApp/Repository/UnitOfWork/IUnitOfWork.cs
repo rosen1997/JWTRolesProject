@@ -14,5 +14,13 @@ namespace JWTRolesTestApp.Repository.UnitOfWork
         IAtWorkManager AtWorkManager { get; }
 
         ILoginHistoryManager LoginHistoryManager { get; }
+
+        void SaveChanges();
+
+        void BeginTransaction();
+
+        void CommitTransaction();
+
+        void RollbackTransaction();
     }
 }

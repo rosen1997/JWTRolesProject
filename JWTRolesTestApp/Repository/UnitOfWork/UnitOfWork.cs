@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Transactions;
 
 namespace JWTRolesTestApp.Repository.UnitOfWork
 {
@@ -30,5 +31,25 @@ namespace JWTRolesTestApp.Repository.UnitOfWork
         public IAtWorkManager AtWorkManager { get; }
 
         public ILoginHistoryManager LoginHistoryManager { get; }
+
+        public void SaveChanges()
+        {
+            repositoryContext.SaveChanges();
+        }
+
+        public void BeginTransaction()
+        {
+            repositoryContext.Database.BeginTransaction();
+        }
+
+        public void CommitTransaction()
+        {
+            repositoryContext.Database.CommitTransaction();
+        }
+
+        public void RollbackTransaction()
+        {
+            repositoryContext.Database.RollbackTransaction();
+        }
     }
 }

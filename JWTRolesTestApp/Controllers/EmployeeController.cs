@@ -100,10 +100,9 @@ namespace JWTRolesTestApp.Controllers
         {
             try
             {
-                employeeRepository.UpdateEmployee(employeeModel);
-                return Ok();
+                return Ok(employeeRepository.UpdateEmployee(employeeModel));
             }
-            catch (Exception e)
+            catch(Exception e)
             {
                 return Problem(e.Message);
             }
@@ -120,9 +119,8 @@ namespace JWTRolesTestApp.Controllers
             }
 
             try
-            {
-                employeeRepository.UpdateEmployee(employeeModel);
-                return Ok();
+            {   
+                return Ok(employeeRepository.UpdateEmployee(employeeModel));
             }
             catch (Exception e)
             {

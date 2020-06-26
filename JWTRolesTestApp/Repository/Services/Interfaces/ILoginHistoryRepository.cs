@@ -13,6 +13,6 @@ namespace JWTRolesTestApp.Repository.Services.Interfaces
 
         public IEnumerable<LoginHistoryModel> GetAllRowsByEmployeeId(int employeeId);
 
-        public void LogoutFromWork(AtWork atWorkModel);
+        public string LogoutFromWork(AtWork atWorkModel);
     }
 }

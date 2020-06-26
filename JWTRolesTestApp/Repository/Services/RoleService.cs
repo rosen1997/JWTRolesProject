@@ -25,6 +25,7 @@ namespace JWTRolesTestApp.Repository.Services
         {
             Role role = new Role() { RoleDescription = RoleDescription };
             unitOfWork.RoleManager.Create(role);
+            unitOfWork.SaveChanges();
         }
 
         public IEnumerable<RoleModel> GetAllRoles()

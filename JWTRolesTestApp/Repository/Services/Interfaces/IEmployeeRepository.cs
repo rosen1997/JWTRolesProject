@@ -19,6 +19,6 @@ namespace JWTRolesTestApp.Repository.Services.Interfaces
 
         public void DeleteEmployee(int id);
 
-        public void UpdateEmployee(UpdateEmployeeModel employeeModel);
+        public string UpdateEmployee(UpdateEmployeeModel employeeModel);
     }
 }

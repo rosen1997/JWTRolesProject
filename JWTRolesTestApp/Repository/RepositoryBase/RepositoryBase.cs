@@ -45,33 +45,32 @@ namespace JWTRolesTestApp.Repository.RepositoryBase
         public virtual void Create(T entity)
         {
             RepositoryContext.Set<T>().Add(entity);
-            RepositoryContext.SaveChanges();
         }
 
-        public virtual bool CreateUser(Employee employee, LoginInfo loginInfo)
-        {
-            using (var transaction = RepositoryContext.Database.BeginTransaction())
-            {
-                try
-                {
-                    RepositoryContext.Employees.Add(employee);
-                    RepositoryContext.SaveChanges();
+        //public virtual bool CreateUser(Employee employee, LoginInfo loginInfo)
+        //{
+        //    using (var transaction = RepositoryContext.Database.BeginTransaction())
+        //    {
+        //        try
+        //        {
+        //            RepositoryContext.Employees.Add(employee);
+        //            RepositoryContext.SaveChanges();
 
-                    loginInfo.EmployeeId = employee.Id;
-                    RepositoryContext.LoginInfos.Add(loginInfo);
-                    RepositoryContext.SaveChanges();
+        //            loginInfo.EmployeeId = employee.Id;
+        //            RepositoryContext.LoginInfos.Add(loginInfo);
+        //            RepositoryContext.SaveChanges();
 
-                    transaction.Commit();
-                    return true;
-                }
-                catch (Exception)
-                {
-                    transaction.Rollback();
-                    return false;
-                }
+        //            transaction.Commit();
+        //            return true;
+        //        }
+        //        catch (Exception)
+        //        {
+        //            transaction.Rollback();
+        //            return false;
+        //        }
 
-            }
-        }
+        //    }
+        //}
 
         /// <summary>
         /// Update specific entry based on PK
@@ -80,42 +79,41 @@ namespace JWTRolesTestApp.Repository.RepositoryBase
         public virtual void Update(T entity)
         {
             RepositoryContext.Set<T>().Update(entity);
-            RepositoryContext.SaveChanges();
         }
 
-        public virtual void UpdateUser(Employee employee, LoginInfo loginInfo)
-        {
-            if (employee != null && loginInfo != null)
-            {
-                using (var transaction = RepositoryContext.Database.BeginTransaction())
-                {
-                    try
-                    {
-                        RepositoryContext.Employees.Update(employee);
-                        RepositoryContext.SaveChanges();
+        //public virtual void UpdateUser(Employee employee, LoginInfo loginInfo)
+        //{
+        //    if (employee != null && loginInfo != null)
+        //    {
+        //        using (var transaction = RepositoryContext.Database.BeginTransaction())
+        //        {
+        //            try
+        //            {
+        //                RepositoryContext.Employees.Update(employee);
+        //                RepositoryContext.SaveChanges();
 
-                        RepositoryContext.LoginInfos.Update(loginInfo);
-                        RepositoryContext.SaveChanges();
+        //                RepositoryContext.LoginInfos.Update(loginInfo);
+        //                RepositoryContext.SaveChanges();
 
-                        transaction.Commit();
-                    }
-                    catch (Exception)
-                    {
-                        transaction.Rollback();
-                    }
-                }
-            }
-            else if (employee != null)
-            {
-                RepositoryContext.Employees.Update(employee);
-                RepositoryContext.SaveChanges();
-            }
-            else if (loginInfo != null)
-            {
-                RepositoryContext.LoginInfos.Update(loginInfo);
-                RepositoryContext.SaveChanges();
-            }
-        }
+        //                transaction.Commit();
+        //            }
+        //            catch (Exception)
+        //            {
+        //                transaction.Rollback();
+        //            }
+        //        }
+        //    }
+        //    else if (employee != null)
+        //    {
+        //        RepositoryContext.Employees.Update(employee);
+        //        RepositoryContext.SaveChanges();
+        //    }
+        //    else if (loginInfo != null)
+        //    {
+        //        RepositoryContext.LoginInfos.Update(loginInfo);
+        //        RepositoryContext.SaveChanges();
+        //    }
+        //}
 
         /// <summary>
         /// Delete specific entry based on PK
@@ -124,7 +122,6 @@ namespace JWTRolesTestApp.Repository.RepositoryBase
         public virtual void Delete(T entity)
         {
             RepositoryContext.Set<T>().Remove(entity);
-            RepositoryContext.SaveChanges();
         }
 
         /// <summary>
@@ -136,26 +133,26 @@ namespace JWTRolesTestApp.Repository.RepositoryBase
             return RepositoryContext.Set<T>().Count();
         }
 
-        public virtual void LogoutUser(AtWork atWork, LoginHistory loginHistory)
-        {
-            using (var transaction = RepositoryContext.Database.BeginTransaction())
-            {
-                try
-                {
-                    RepositoryContext.AtWork.Remove(atWork);
-                    RepositoryContext.SaveChanges();
+        //public virtual void LogoutUser(AtWork atWork, LoginHistory loginHistory)
+        //{
+        //    using (var transaction = RepositoryContext.Database.BeginTransaction())
+        //    {
+        //        try
+        //        {
+        //            RepositoryContext.AtWork.Remove(atWork);
+        //            RepositoryContext.SaveChanges();
 
-                    RepositoryContext.LoginHistory.Add(loginHistory);
-                    RepositoryContext.SaveChanges();
+        //            RepositoryContext.LoginHistory.Add(loginHistory);
+        //            RepositoryContext.SaveChanges();
 
-                    transaction.Commit();
-                }
-                catch (Exception)
-                {
-                    transaction.Rollback();
-                }
+        //            transaction.Commit();
+        //        }
+        //        catch (Exception)
+        //        {
+        //            transaction.Rollback();
+        //        }
 
-            }
-        }
+        //    }
+        //}
     }
 }

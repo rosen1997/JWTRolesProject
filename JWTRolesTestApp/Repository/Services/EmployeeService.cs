@@ -90,9 +90,35 @@ namespace JWTRolesTestApp.Repository.Services
             return login.EmployeeId;
         }
 
+        //public EmployeeModel CreateEmployee(CreateEmployeeModel createEmployeeModel)
+        //{
+        //    if (unitOfWork.LoginInfoManager.GetAllWIthEmployee().SingleOrDefault(x => x.Username == createEmployeeModel.Username) != null)
+        //        return null;
+
+        //    byte[] passwordHash, passwordSalt;
+        //    CreatePasswordHash(createEmployeeModel.Password, out passwordHash, out passwordSalt);
+
+        //    Employee employee = mapper.Map<Employee>(createEmployeeModel);
+        //    int roleId = unitOfWork.RoleManager.GetAll().Where(x => x.RoleDescription == createEmployeeModel.RoleDescription).FirstOrDefault().Id;
+        //    employee.RoleId = roleId;
+        //    LoginInfo loginInfo = mapper.Map<LoginInfo>(createEmployeeModel);
+        //    loginInfo.PasswordSalt = passwordSalt;
+        //    loginInfo.PasswordHash = passwordHash;
+
+        //    if (!unitOfWork.EmployeeManager.CreateUser(employee, loginInfo))
+        //    {
+        //        return null;
+        //    }
+
+        //    EmployeeModel employeeModel = mapper.Map<EmployeeModel>(employee);
+
+        //    return employeeModel;
+
+        //}
+
         public EmployeeModel CreateEmployee(CreateEmployeeModel createEmployeeModel)
         {
-            if (unitOfWork.LoginInfoManager.GetAllWIthEmployee().SingleOrDefault(x => x.Username == createEmployeeModel.Username) != null)
+            if (unitOfWork.LoginInfoManager.GetAll().SingleOrDefault(x => x.Username == createEmployeeModel.Username) != null)
                 return null;
 
             byte[] passwordHash, passwordSalt;
@@ -105,15 +131,28 @@ namespace JWTRolesTestApp.Repository.Services
             loginInfo.PasswordSalt = passwordSalt;
             loginInfo.PasswordHash = passwordHash;
 
-            if (!unitOfWork.EmployeeManager.CreateUser(employee, loginInfo))
+            try
             {
+                unitOfWork.BeginTransaction();
+
+                unitOfWork.EmployeeManager.Create(employee);
+                unitOfWork.SaveChanges();
+
+                loginInfo.EmployeeId = employee.Id;
+                unitOfWork.LoginInfoManager.Create(loginInfo);
+                unitOfWork.SaveChanges();
+
+                unitOfWork.CommitTransaction();
+            }
+            catch
+            {
+                unitOfWork.RollbackTransaction();
                 return null;
             }
 
             EmployeeModel employeeModel = mapper.Map<EmployeeModel>(employee);
 
             return employeeModel;
-
 
         }
 
@@ -153,11 +192,64 @@ namespace JWTRolesTestApp.Repository.Services
         {
             Employee employee = GetEntityById(id);
             if (employee != null)
+            {
                 unitOfWork.EmployeeManager.Delete(employee);
+                unitOfWork.SaveChanges();
+            }
 
         }
 
-        public void UpdateEmployee(UpdateEmployeeModel employeeModel)
+        //public void UpdateEmployee(UpdateEmployeeModel employeeModel)
+        //{
+        //    bool updateUser = false;
+        //    bool updateLoginInfo = false;
+
+        //    Employee employeeDB = GetEntityById(employeeModel.EmployeeId);
+        //    LoginInfo loginDB = loginInfoRepository.GetEntityByUserId(employeeModel.EmployeeId);
+
+        //    if (employeeDB == null || loginDB == null)
+        //    {
+        //        return;
+        //    }
+
+        //    int roleId = -1;
+        //    if (employeeModel.RoleDescription != null)
+        //    {
+        //        roleId = unitOfWork.RoleManager.GetAll().Where(x => x.RoleDescription == employeeModel.RoleDescription).FirstOrDefault().Id;
+        //    }
+
+        //    if ((!string.IsNullOrWhiteSpace(employeeModel.FirstName) && employeeModel.FirstName != employeeDB.FirstName)
+        //        || (!string.IsNullOrWhiteSpace(employeeModel.MiddleName) && employeeModel.MiddleName != employeeDB.MiddleName)
+        //        || (!string.IsNullOrWhiteSpace(employeeModel.LastName) && employeeModel.LastName != employeeDB.LastName)
+        //        || (roleId != -1 && employeeDB.RoleId != roleId))
+        //    {
+        //        employeeDB.FirstName = employeeModel.FirstName;
+        //        employeeDB.MiddleName = employeeModel.MiddleName;
+        //        employeeDB.LastName = employeeModel.LastName;
+
+        //        employeeDB.RoleId = roleId;
+        //        updateUser = true;
+        //    }
+        //    if (!string.IsNullOrWhiteSpace(employeeModel.Password) && !VerifyPasswordHash(employeeModel.Password, loginDB.PasswordHash, loginDB.PasswordSalt))
+        //    {
+        //        byte[] passwordHash, passwordSalt;
+        //        CreatePasswordHash(employeeModel.Password, out passwordHash, out passwordSalt);
+
+        //        loginDB.PasswordSalt = passwordSalt;
+        //        loginDB.PasswordHash = passwordHash;
+
+        //        updateLoginInfo = true;
+        //    }
+
+        //    if (updateUser && updateLoginInfo)
+        //        unitOfWork.EmployeeManager.UpdateUser(employeeDB, loginDB);
+        //    else if (updateUser)
+        //        unitOfWork.EmployeeManager.UpdateUser(employeeDB, null);
+        //    else if (updateLoginInfo)
+        //        unitOfWork.EmployeeManager.UpdateUser(null, loginDB);
+        //}
+
+        public string UpdateEmployee(UpdateEmployeeModel employeeModel)
         {
             bool updateUser = false;
             bool updateLoginInfo = false;
@@ -167,7 +259,7 @@ namespace JWTRolesTestApp.Repository.Services
 
             if (employeeDB == null || loginDB == null)
             {
-                return;
+                return "Update failed! Could not find employee.";
             }
 
             int roleId = -1;
@@ -200,11 +292,51 @@ namespace JWTRolesTestApp.Repository.Services
             }
 
             if (updateUser && updateLoginInfo)
-                unitOfWork.EmployeeManager.UpdateUser(employeeDB, loginDB);
+            {
+                try
+                {
+                    unitOfWork.BeginTransaction();
+
+                    unitOfWork.EmployeeManager.Update(employeeDB);
+                    unitOfWork.SaveChanges();
+
+                    unitOfWork.LoginInfoManager.Update(loginDB);
+                    unitOfWork.SaveChanges();
+
+                    unitOfWork.CommitTransaction();
+                }
+                catch(Exception e)
+                {
+                    unitOfWork.RollbackTransaction();
+                    return e.Message;
+                }
+            }
             else if (updateUser)
-                unitOfWork.EmployeeManager.UpdateUser(employeeDB, null);
+            {
+                try
+                {
+                    unitOfWork.EmployeeManager.Update(employeeDB);
+                    unitOfWork.SaveChanges();
+                }
+                catch(Exception e)
+                {
+                    return e.Message;
+                }
+            }
             else if (updateLoginInfo)
-                unitOfWork.EmployeeManager.UpdateUser(null, loginDB);
+            {
+                try
+                {
+                    unitOfWork.LoginInfoManager.Update(loginDB);
+                    unitOfWork.SaveChanges();
+                }
+                catch(Exception e)
+                {
+                    return e.Message;
+                }
+            }
+
+            return "Update sucsessfull.";
         }
     }
 }

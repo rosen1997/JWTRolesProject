@@ -31,11 +31,29 @@ namespace JWTRolesTestApp.Repository.Services
             return mapper.Map<IEnumerable<LoginHistoryModel>>(unitOfWork.LoginHistoryManager.GetAllByEmployeeId(employeeId));
         }
 
-        public void LogoutFromWork(AtWork atWork)
+        public string LogoutFromWork(AtWork atWork)
         {
             LoginHistory loginHistory = new LoginHistory() { LoginTime = atWork.LoginTime, LogoutTime = DateTime.Now, EmployeeId = atWork.EmployeeId };
 
-            unitOfWork.LoginInfoManager.LogoutUser(atWork, loginHistory);
+            try
+            {
+                unitOfWork.BeginTransaction();
+
+                unitOfWork.AtWorkManager.Delete(atWork);
+                unitOfWork.SaveChanges();
+
+                unitOfWork.LoginHistoryManager.Create(loginHistory);
+                unitOfWork.SaveChanges();
+
+                unitOfWork.CommitTransaction();
+
+                return "Logout successful.";
+            }
+            catch(Exception e)
+            {
+                unitOfWork.RollbackTransaction();
+                return e.Message;
+            }
         }
     }
 }

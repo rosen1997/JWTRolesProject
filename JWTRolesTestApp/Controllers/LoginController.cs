@@ -92,9 +92,14 @@ namespace JWTRolesTestApp.Controllers
                 return BadRequest();
             }
 
-            loginHistoryRepository.LogoutFromWork(atWork);
-
-            return Ok();
+            try
+            {
+                return Ok(loginHistoryRepository.LogoutFromWork(atWork));
+            }
+            catch(Exception e)
+            {
+                return Problem(e.Message);
+            }
         }
 
         [HttpGet]

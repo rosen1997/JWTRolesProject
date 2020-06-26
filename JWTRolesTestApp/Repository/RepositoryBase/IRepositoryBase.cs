@@ -22,7 +22,7 @@ namespace JWTRolesTestApp.Repository.RepositoryBase
         /// <param name="entity">Entry to add</param>
         void Create(T entity);
 
-        bool CreateUser(Employee employee, LoginInfo loginInfo);
+        //bool CreateUser(Employee employee, LoginInfo loginInfo);
 
         /// <summary>
         /// Update specific entry based on PK
@@ -30,7 +30,7 @@ namespace JWTRolesTestApp.Repository.RepositoryBase
         /// <param name="entity">Entry to update</param>
         void Update(T entity);
 
-        void UpdateUser(Employee employee, LoginInfo loginInfo);
+        //void UpdateUser(Employee employee, LoginInfo loginInfo);
 
         /// <summary>
         /// Delete specific entry based on PK
@@ -44,6 +44,6 @@ namespace JWTRolesTestApp.Repository.RepositoryBase
         /// <returns></returns>
         int Count();
 
-        void LogoutUser(AtWork atWork, LoginHistory loginHistory);
+        //void LogoutUser(AtWork atWork, LoginHistory loginHistory);
     }
 }
