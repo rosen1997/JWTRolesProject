@@ -67,7 +67,8 @@ namespace JWTRolesTestApp.Controllers
         [HttpPost("CreateEmployee")]
         public IActionResult CreateEmployee([FromBody] CreateEmployeeModel createEmployeeModel)
         {
-            EmployeeModel employee = employeeRepository.CreateEmployee(createEmployeeModel);
+            string message = "";
+            EmployeeModel employee = employeeRepository.CreateEmployee(createEmployeeModel, ref message);
 
             if (employee == null)
             {
@@ -102,7 +103,7 @@ namespace JWTRolesTestApp.Controllers
             {
                 return Ok(employeeRepository.UpdateEmployee(employeeModel));
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 return Problem(e.Message);
             }
@@ -119,7 +120,7 @@ namespace JWTRolesTestApp.Controllers
             }
 
             try
-            {   
+            {
                 return Ok(employeeRepository.UpdateEmployee(employeeModel));
             }
             catch (Exception e)

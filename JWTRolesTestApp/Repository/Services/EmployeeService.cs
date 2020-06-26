@@ -116,10 +116,13 @@ namespace JWTRolesTestApp.Repository.Services
 
         //}
 
-        public EmployeeModel CreateEmployee(CreateEmployeeModel createEmployeeModel)
+        public EmployeeModel CreateEmployee(CreateEmployeeModel createEmployeeModel, ref string message)
         {
-            if (unitOfWork.LoginInfoManager.GetAll().SingleOrDefault(x => x.Username == createEmployeeModel.Username) != null)
+            if (unitOfWork.LoginInfoManager.GetAllWIthEmployee().SingleOrDefault(x => x.Username == createEmployeeModel.Username) != null)
+            {
+                message = "Username already exists!";
                 return null;
+            }
 
             byte[] passwordHash, passwordSalt;
             CreatePasswordHash(createEmployeeModel.Password, out passwordHash, out passwordSalt);
